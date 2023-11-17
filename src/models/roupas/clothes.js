@@ -9,7 +9,7 @@ class Chothes {
         return this.clothes.find((Chother) => Chother.id === id);
     
     }
-    addChother(Chother) {
+    addRoupa(Chother) {
         this.clothes.push(Chother);
     }
     remove(id) {

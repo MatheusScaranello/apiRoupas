@@ -1,25 +1,28 @@
 import roupaModel from '../models/roupas/roupa.js';
 import listaRoupas from '../models/roupas/clothes.js';
 
-const roupas = new roupaModel(listaRoupas);
+const roupas = new listaRoupas();
 
 export const getRoupas = (req, res) => {
-    res.send(roupas.getAllRoupas());
-    if (roupas.getAllRoupas().length === 0) {
+    const mensagem= `Foram encontrados ${roupas.getAllclothes().length} itens cadastrados.`;
+    const roupasOrdenadas = roupas.getAllclothes().sort((a, b) => a.name.localeCompare(b.name));
+    res.send({mensagem, roupasOrdenadas});
+    if (roupas.getAllclothes().length === 0) {
         res.send('Não há itens cadastrados');
     }
 };
 
 export const getRoupaId = (req, res) => {
     const { id } = req.params;
-    const roupa = roupas.getRoupa(id);
+    const roupa = roupas.getChother(id);
     res.send(roupa);
 };
 
 export const addRoupa = (req, res) => {
-    const roupa = req.body;
+    const { name, preco, tamanho, tipo, quantidade, imagem } = req.body;
     validarRoupa(req, res);
     if (validarRoupa) {
+        const roupa = new roupaModel(name, preco, tamanho, tipo, quantidade, imagem);
         roupas.addRoupa(roupa);
         res.send(`Roupa adicionada com sucesso. ID: ${roupa.id}`);
     }
@@ -64,14 +67,37 @@ export const validarRoupa = (req, res) => {
     } else if (quantidade < 0 || quantidade > 15000) {
         res.send('A quantidade em estoque deve ser um número inteiro positivo limitado a 15000');
         return false
-    } else if (imagem.length < 6 || imagem.length > 40) {
+    } else if (!/\.(jpeg|jpg|gif|png|bmp)$/i.test(imagem)) {
         res.send('A imagem do item deve ser uma URL válida');
         return false
     }else if (name === '' || preco === '' || tamanho === '' || tipo === '' || quantidade === '' || imagem === '') {
         res.send('Todos os campos devem ser preenchidos');
         return false
     }  else {
-        res.send('Item validado com sucesso');
         return true
     }
 };
+
+export const getRoupasporTipo = (req, res) => {
+    const { tipo } = req.params;
+    const roupasporTipo = roupas.getAllclothes().filter((roupa) => roupa.tipo === tipo);
+    if (roupasporTipo.length === 0) {
+        res.send('Não há itens cadastrados com esse tipo');
+    }
+    res.send(roupasporTipo);
+};
+
+export const getRoupaporTamanho = (req, res) => {
+    const { tamanho } = req.params;
+    const roupaporTamanho = roupas.getAllclothes().filter((roupa) => roupa.tamanho === tamanho);
+    if (roupaporTamanho.length === 0) {
+        res.send('Não há itens cadastrados com esse tamanho');
+    }
+    res.send(roupaporTamanho);
+};
+
+//crieu uma const de verificar a url da imagem /\.(jpeg|jpg|gif|png|bmp)$/i.test(imagem)
+//
+//} else if (!/\.(jpeg|jpg|gif|png|bmp)$/i.test(imagem)) {
+//res.send('A imagem do item deve ser uma URL válida');
+//return false
