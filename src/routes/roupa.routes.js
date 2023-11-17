@@ -1,4 +1,4 @@
-import {getRoupas, getRoupaId,addRoupa,deleteRoupa,updateRoupa} from '../controllers/roupa.controller.js'; 
+import { getRoupas,getRoupaId,addRoupa,deleteRoupa,updateRoupa } from '../controllers/roupa.controller.js';
 import { Router } from 'express';
 
 const roupa = Router();
